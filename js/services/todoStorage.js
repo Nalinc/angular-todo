@@ -17,7 +17,7 @@ angular.module('todomvc')
 			.then(function () {
 				return $injector.get('api');
 			}, function () {
-				return $injector.get('localStorage');
+				return $injector.get('pouchDbStorage');
 			});
 	})
 
@@ -133,6 +133,7 @@ angular.module('todomvc')
 				var deferred = $q.defer();
 
 				angular.copy(store._getFromLocalStorage(), store.todos);
+				console.log(store.todos);
 				deferred.resolve(store.todos);
 
 				return deferred.promise;
@@ -157,6 +158,112 @@ angular.module('todomvc')
 				store._saveToLocalStorage(store.todos);
 				deferred.resolve(store.todos);
 
+				return deferred.promise;
+			}
+		};
+
+		return store;
+	})
+
+	.factory('pouchDbStorage', function ($q) {
+		'use strict';
+		var db = new PouchDB('ToDoDb');
+
+		var store = {
+			todos: [],
+
+			clearCompleted: function () {
+				var deferred = $q.defer();
+
+				var incompleteTodos = store.todos.filter(function (todo) {
+					return !todo.completed;
+				});
+
+				angular.copy(incompleteTodos, store.todos);
+
+
+
+				return deferred.promise;
+			},
+
+			delete: function (todo) {
+				var deferred = $q.defer();
+
+
+				return deferred.promise;
+			},
+
+			get: function () {
+				var deferred = $q.defer();
+
+				db.allDocs({
+					include_docs: true,
+  					attachments: true
+				}).then(function(response){
+					
+					for(var i=0;i<response.total_rows;i++){
+						store.todos.push(response.rows[i].doc)
+					}
+					console.log(store.todos);
+					deferred.resolve(store.todos);
+				},function(errGET){
+					deferred.reject(errGET);
+				});
+
+				return deferred.promise;
+			},
+
+			insert: function (todo) {
+				var deferred = $q.defer();
+				console.log(todo)
+				db.post(todo).then(function (response) {
+				  // handle response
+				  todo._id=response._id;
+				  todo._rev=response._rev;
+				  store.todos.push(todo)
+				  console.log('task "'+ todo.title +'"" added to pouchdb');
+				  deferred.resolve(store.todos);
+				},function(errInsert){
+					deferred.reject(errInsert)
+					console.log(errInsert);
+				});				
+
+				return deferred.promise;
+			},
+
+			put: function (todo, index) {
+				var deferred = $q.defer();
+
+				db.get(store.todos[index]._id).then(function(doc) {
+					console.log(doc)
+					var newObj = {
+								    _id: doc._id.toString(),
+								    _rev: doc._rev,
+								    title: todo.title,
+								    completed: todo.completed
+								  }
+				  console.log(newObj);
+				  return db.put(newObj);
+				}).then(function(response) {
+				  // handle response
+				  console.log(response)
+				  deferred.resolve(response)
+				}).catch(function (err) {
+				  console.log(err);
+				  deferred.reject(err)
+				});
+
+				return deferred.promise;
+			},
+
+			clearDb: function(){
+				var deferred = $q.defer;
+
+				db.destroy().then(function(res){
+					deferred.resolve(res)
+				},function(err){
+					deferred.reject(err)
+				})
 				return deferred.promise;
 			}
 		};

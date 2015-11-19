@@ -53,11 +53,14 @@
 				</footer>
 			</section>
 			<footer id="info">
+					<input type='button' id="clear-" ng-click="clearDb()" value='Clear DB'>
+
 				<p>Type in a task and hit Enter to add it</p>
 				<p>Double-click to edit a todo</p>
 				
 			</footer>
 		</script>
+		<script src="node_modules/pouchdb/dist/pouchdb.min.js"></script>
 		<script src="node_modules/angular/angular.js"></script>
 		<script src="node_modules/angular-route/angular-route.js"></script>
 		<script src="node_modules/angular-resource/angular-resource.js"></script>

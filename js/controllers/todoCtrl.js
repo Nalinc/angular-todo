@@ -31,7 +31,7 @@ angular.module('todomvc')
 		$scope.addTodo = function () {
 			var newTodo = {
 				title: $scope.newTodo.trim(),
-				completed: false
+				completed: false,
 			};
 
 			if (!newTodo.title) {
@@ -122,4 +122,12 @@ angular.module('todomvc')
 				}
 			});
 		};
+
+		$scope.clearDb = function(){
+			store.clearDb().then(function(res){
+				console.log('database cleared');
+			},function(err){
+				console.log(err)
+			})
+		}
 	});
