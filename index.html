@@ -6,6 +6,14 @@
 		<link rel="stylesheet" href="node_modules/todomvc-common/base.css">
 		<link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
 		<style>[ng-cloak] { display: none; }</style>
+		<style>
+			#todo-list li select, #todo-list li input{
+				  font-size: 18px;
+			}
+			#todo-list li label {
+				  display: inline-block;
+			}
+		</style>
 	</head>
 	<body ng-app="todomvc">
 		<ng-view />
@@ -25,6 +33,17 @@
 							<div class="view">
 								
 								<label>{{todo.title}}</label>
+								<select ng-model="todo.priority">
+								  <option value="P1">P1</option>
+								  <option value="P2">P2</option>
+								  <option value="P3">P3</option>
+								  <option value="P4">P4</option>
+								  <option value="P5">P5</option>
+								  <option value="P6">P6</option>
+								  <option value="P7">P7</option>
+								  <option value="P8">P8</option>
+								</select>
+								<input type='button' ng-click="updatePriority()" value="Update Priority">
 								<button class="destroy" ng-click="removeTodo(todo)"></button>
 							</div>
 							<form ng-submit="saveEdits(todo, 'submit')">
@@ -35,9 +54,11 @@
 				</section>				
 			</section>
 			<footer id="info">
-					<input type='button' id="clear-" ng-click="clearDb()" value='Delete DB'>
-					<input type='button' id="clear-" ng-click="sync()" value='Sync with Remote'>
-
+					<input type='button' id="clear-" ng-click="clearDb()" value='Delete DB' style="font-size:20px">					
+					<input type='button' ng-hide="hideSyncButton" id="clear-" ng-click="sync()" value='Sync with Remote' style="font-size:20px">
+					<br/>
+					<br/>
+					 <input type="checkbox" ng-model="enableAutoSync" style="font-size:20px;color:black" value><span style="font-size:20px;color:black">Enable Automatic Sync</span></input>
 				<p>Type in a task and hit Enter to add it</p>
 				<p>Double-click to edit a todo</p>
 				

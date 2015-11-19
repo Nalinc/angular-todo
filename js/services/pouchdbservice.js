@@ -43,6 +43,7 @@ angular.module('todomvc')
 			},
 
 			get: function () {
+				store.todos = [];	
 				var deferred = $q.defer();
 
 				db.allDocs({
@@ -116,13 +117,17 @@ angular.module('todomvc')
 			},
 
 			sync: function(){
-				var sync = PouchDB.sync('testdb', 'http://manav:5984/couchdb/testdb', {
-				 
+				console.log("Syncing");
+				var deferred = $q.defer();
+				var sync = PouchDB.sync('testdb', 'http://manav:5984/couchdb/testdb', {				 
 				}).on('complete', function (info) {
 				  console.log("Sync Complete");
+				  deferred.resolve(info);
 				}).on('error', function (err) {
 				  console.log("Sync error");
+				  deferred.reject(err);
 				});
+				return deferred.promise;
 			}
 		};
 
