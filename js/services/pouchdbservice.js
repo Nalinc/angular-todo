@@ -13,21 +13,7 @@ angular.module('todomvc')
 		var db = new PouchDB('testdb');
 
 		var store = {
-			todos: [],
-
-			clearCompleted: function () {
-				var deferred = $q.defer();
-
-				var incompleteTodos = store.todos.filter(function (todo) {
-					return !todo.completed;
-				});
-
-				angular.copy(incompleteTodos, store.todos);
-
-
-
-				return deferred.promise;
-			},
+			todos: [],			
 
 			delete: function (todo) {
 				var deferred = $q.defer();				
@@ -41,6 +27,22 @@ angular.module('todomvc')
 				});
 				return deferred.promise;
 			},
+
+			update: function (todo, index) {				
+				var deferred = $q.defer();				
+				db.put(todo).then(function (response) {
+				  console.log('Document updated ='+ JSON.stringify(response));	
+				  todo._id=response.id;
+				  todo._rev=response.rev;
+				  store.todos[index] = todo;
+				  deferred.resolve();
+				},function(errInsert){
+					deferred.reject(errInsert)
+					console.log("Document update error = " + errInsert);
+				});
+				return deferred.promise;
+			},
+
 
 			get: function () {
 				store.todos = [];	
@@ -77,32 +79,7 @@ angular.module('todomvc')
 				});				
 
 				return deferred.promise;
-			},
-
-			put: function (todo, index) {
-				var deferred = $q.defer();
-
-				db.get(store.todos[index]._id).then(function(doc) {
-					console.log(doc)
-					var newObj = {
-								    _id: doc._id.toString(),
-								    _rev: doc._rev,
-								    title: todo.title,
-								    completed: todo.completed
-								  }
-				  console.log(newObj);
-				  return db.put(newObj);
-				}).then(function(response) {
-				  // handle response
-				  console.log(response)
-				  deferred.resolve(response)
-				}).catch(function (err) {
-				  console.log(err);
-				  deferred.reject(err)
-				});
-
-				return deferred.promise;
-			},
+			},			
 
 			clearDb: function(){
 				var deferred = $q.defer();

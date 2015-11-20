@@ -13,6 +13,14 @@
 			#todo-list li label {
 				  display: inline-block;
 			}
+			#todo-list li .destroy {
+				display:inline-block;
+				cursor:pointer;
+			}
+			footer#info input, footer#info span {
+				font-size:20px;
+				color:black;
+			}
 		</style>
 	</head>
 	<body ng-app="todomvc">
@@ -23,7 +31,7 @@
 				<header id="header">
 					<h1>To-Dos</h1>
 					<form id="todo-form" ng-submit="addTodo()">
-						<input id="new-todo" placeholder="What needs to be done?" ng-model="newTodo" ng-disabled="saving" autofocus>
+						<input id="new-todo" placeholder="Add Tasks here" ng-model="newTodo" ng-disabled="saving" autofocus>
 					</form>
 				</header>
 				<section id="main" ng-show="todos.length" ng-cloak>
@@ -43,22 +51,19 @@
 								  <option value="P7">P7</option>
 								  <option value="P8">P8</option>
 								</select>
-								<input type='button' ng-click="updatePriority()" value="Update Priority">
+								<input type='button' ng-click="updatePriority(todo, $index)" value="Update Priority">
 								<button class="destroy" ng-click="removeTodo(todo)"></button>
-							</div>
-							<form ng-submit="saveEdits(todo, 'submit')">
-								<input class="edit" ng-trim="false" ng-model="todo.title" todo-escape="revertEdits(todo)" ng-blur="saveEdits(todo, 'blur')" todo-focus="todo == editedTodo">
-							</form>
+							</div>							
 						</li>
 					</ul>
 				</section>				
 			</section>
 			<footer id="info">
-					<input type='button' id="clear-" ng-click="clearDb()" value='Delete DB' style="font-size:20px">					
-					<input type='button' ng-hide="hideSyncButton" id="clear-" ng-click="sync()" value='Sync with Remote' style="font-size:20px">
+					<input type='button' id="clear-" ng-click="clearDb()" value='Delete DB'>					
+					<input type='button' ng-hide="hideSyncButton" id="clear-" ng-click="sync()" value='Sync with Remote'>
 					<br/>
 					<br/>
-					 <input type="checkbox" ng-model="enableAutoSync" style="font-size:20px;color:black" value><span style="font-size:20px;color:black">Enable Automatic Sync</span></input>
+					 <input type="checkbox" ng-click="updateAutoSync($event)"><span>Enable Automatic Sync</span></input>
 				<p>Type in a task and hit Enter to add it</p>
 				<p>Double-click to edit a todo</p>
 				

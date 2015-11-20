@@ -9,8 +9,7 @@ angular.module('todomvc')
 	.controller('TodoCtrl', function TodoCtrl($scope, $routeParams, $filter, $interval, pouchDbStorage, todos) {
 		'use strict';
 
-		$scope.todos = todos;	
-		$scope.enableAutoSync = false;	
+		$scope.todos = todos;
 		$scope.hideSyncButton = false;
 
 		$scope.newTodo = '';
@@ -55,21 +54,7 @@ angular.module('todomvc')
 			},function(err){
 				//console.log(err)
 			})
-		};
-
-		$scope.$watch('enableAutoSync', function(newValue, oldValue) {
-		  if(newValue == true) {
-		  	console.log("Enabling automatic sync");
-		  	$scope.hideSyncButton = true;
-		  	autoSyncInterval = $interval(function(){
-				$scope.sync();
-			}, 5000);
-		  } else {
-		  	console.log("Disabling automatic sync");
-		  	$scope.hideSyncButton = false;	
-		  	$interval.cancel(autoSyncInterval);
-		  }
-		});
+		};		
 
 		$scope.sync = function(){
 			pouchDbStorage.sync().then(function() {
@@ -78,5 +63,31 @@ angular.module('todomvc')
                 });
 			});
 		};
+
+		$scope.updatePriority = function(todo, index) {
+			pouchDbStorage.update(todo, index).then(function(res){
+				//console.log(todo);
+				//console.log('database cleared');
+			},function(err){
+				//console.log(err)
+			})
+		}
+
+		$scope.updateAutoSync = function($event) {
+			 var checkbox = $event.target;
+			 var isChecked = checkbox.checked;
+			 if(isChecked) {
+			 	console.log("Enabling automatic sync");
+			  	$scope.hideSyncButton = true;
+			  	autoSyncInterval = $interval(function(){
+					$scope.sync();
+				}, 5000);
+			 } else {
+			 	console.log("Disabling automatic sync");
+			  	$scope.hideSyncButton = false;	
+			  	$interval.cancel(autoSyncInterval);
+			 }
+        	 
+		}
 		
 	});
